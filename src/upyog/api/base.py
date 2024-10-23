@@ -536,7 +536,8 @@ class RootClient(BaseObject):
     
     def _build_url(self, uri):
         server = self.default_server
-        return os.path.join(server["url"], uri)
+        # return os.path.join(server["url"], uri)
+        return f"{server['url']}/{uri}"
     
     def _build_request_kwargs(self, method, kwargs):
         method = lower(method)

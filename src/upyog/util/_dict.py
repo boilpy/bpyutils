@@ -276,6 +276,8 @@ def getattr2(d, key, default = None):
     for key in keys:
         if value and isinstance(value, dict) and key in value:
             value = value[key]
+        elif hasattr(value, key):
+            value = getattr(value, key)
         else:
             value = None
 
