@@ -23,6 +23,8 @@ from upyog.util.eject import ejectable
 
 logger = get_logger()
 
+JINJA_TEMPLATE_EXTENSIONS = (".jinja", ".jinja2", ".j2")
+
 @ejectable(deps = ["read", "import_or_raise", "sequencify"])
 def render_jinja_template(template, context = None, template_dirs = None):
     import os.path as osp
@@ -36,7 +38,7 @@ def render_jinja_template(template, context = None, template_dirs = None):
     if osp.exists(template):
         exists = True
     else:
-        for ext in (".jinja", ".jinja2", ".j2"):
+        for ext in JINJA_TEMPLATE_EXTENSIONS:
             path = f"{template}{ext}"
             if osp.exists(path):
                 exists   = True

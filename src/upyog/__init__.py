@@ -180,6 +180,7 @@ from upyog.util.system import (
     parse_config_string,
     makepath,
     is_tty,
+    join2
 )
 from upyog.util.environ import (
     getenv,
@@ -240,7 +241,9 @@ from upyog.limits import (
     MAX_UNSIGNED_SHORT
 )
 from upyog.util.template import (
-    render_template
+    render_template,
+    render_jinja_template,
+    JINJA_TEMPLATE_EXTENSIONS
 )
 from upyog.util.error import (
     pretty_print_error

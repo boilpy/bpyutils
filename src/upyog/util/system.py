@@ -619,5 +619,22 @@ def parse_config_string(config, auto_cast = True):
     
     return result
 
+@ejectable()
 def is_tty():
+    import sys
+
     return sys.stdout.isatty()
+
+@ejectable()
+def join2(*args, **kwargs):
+    output = ""
+    path   = kwargs.pop("path", False)
+
+    if path:
+        import os.path as osp
+        for arg in args:
+            output = osp.join(output, arg)
+    else:
+        output = "".join(args)
+
+    return output
