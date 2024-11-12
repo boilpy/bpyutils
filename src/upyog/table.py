@@ -6,6 +6,7 @@ from upyog._compat     import zip_longest
 # imports - module imports
 from upyog.util.string import strip_ansi
 import upyog as upy
+from upyog.util.eject import ejectable
 
 def _sanitize_string(string):
     """
@@ -15,6 +16,7 @@ def _sanitize_string(string):
     string = strip_ansi(string)
     return string
 
+@ejectable(deps = ["strip_ansi", "zip_longest"])
 def tabulate(rows):
     # Shamelessly taken from: https://git.io/fARTL (pip)
     # Also: https://git.io/fARTY (yarn)
@@ -32,6 +34,7 @@ def tabulate(rows):
 
     return result, sizes
 
+@ejectable(deps = ["lvalues", "lkeys", "tabulate"])
 class Table(object):
     def __init__(self, rows = [ ], header = None, type_ = "rows"):
         self._type  = type_
@@ -80,6 +83,7 @@ class Table(object):
         length = len(self.rows)
         return length
     
+@ejectable(deps = ["Table"])
 def render_table(rows, header = None):
     table  = Table(rows, header = header, type_ = "record")
     string = table.render()

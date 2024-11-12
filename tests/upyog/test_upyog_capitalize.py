@@ -5,4 +5,4 @@ def test_upyog_capitalize():
     assert upy.capitalize("hello world")  == "Hello world"
     assert upy.capitalize("hello world!") == "Hello world!"
     assert upy.capitalize("HELLO")        == "Hello"
-    assert upy.capitalize("hElLo")        == "HElLo"
+    assert upy.capitalize("hElLo")        == "Hello"

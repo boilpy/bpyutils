@@ -30,8 +30,16 @@ iso_weekday = dt.datetime.isoweekday
 EPOCH       = dt.datetime(1970, 1, 1)
 
 # @ejectable()
-# def utcnow():
-#     return now(dt.timezone.utc)
+# def utcnow(timezone_ = None):
+#     """
+#         Get current UTC datetime.
+#     """
+#     now_ = now(dt.timezone.utc)
+#     if timezone_:
+#         import pytz
+#         timezone_ = getattr(pytz, timezone_, "UTC")
+#         now_      = now_.astimezone(timezone_)
+#     return now_
 
 @ejectable()
 def get_timestamp_str(format_ = '%Y-%m-%d %H:%M:%S', dtobj = None):

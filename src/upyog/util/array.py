@@ -106,6 +106,7 @@ def chunkify(arr, n):
 
         sequencify([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], 3)
     """
+    arr = list(arr)
     for i in range(0, len(arr), n):
         yield arr[i:i + n]
 
@@ -235,3 +236,7 @@ def chain(*fns, query):
     for fn in fns:
         result = fn(result)
     return result
+
+@ejectable()
+def pluck(arr, key):
+    return [d[key] for d in arr]

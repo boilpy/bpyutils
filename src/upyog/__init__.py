@@ -95,9 +95,11 @@ from upyog.util.array  import (
     is_subset,
     group_by,
     find,
-    chain
+    chain,
+    pluck,
 )
 from upyog.util.string import (
+    sanitize_html,
     sanitize,
     lower,
     upper,
@@ -282,7 +284,9 @@ from upyog.util._aws import (
     get_aws_credentials,
     AWS_DEFAULT,
     AWSSigV4Auth,
-    AWSClient
+    AWSClient,
+    get_boto3_session,
+    get_boto3_client,
 )
 
 settings = Settings()
