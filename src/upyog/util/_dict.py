@@ -436,4 +436,10 @@ def dict_values(d):
 def dict_items(d):
     return d.items()
 
-
+@ejectable()
+def dict_filter(d, fn = lambda k, v: v):
+    filtered = {}
+    for k, v in upy.iteritems(d):
+        if fn(k, v):
+            filtered[k] = v
+    return filtered

@@ -56,6 +56,7 @@ from upyog.util._dict  import (
     dict_keys,
     dict_values,
     dict_items,
+    dict_filter
 )
 from upyog.util._async import (
     asyncify,
