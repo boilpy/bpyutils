@@ -443,3 +443,28 @@ def dict_filter(d, fn = lambda k, v: v):
         if fn(k, v):
             filtered[k] = v
     return filtered
+
+@ejectable(deps = ["subsets", "sequencify"])
+def dict_combinations(struct, must = None):
+    struct  = struct.copy()
+
+    keys    = struct.keys()
+
+    if must:
+        keys_combinations = [keys]
+    else:
+        keys_combinations = subsets(keys)
+
+    results = []
+
+    for key_combination in keys_combinations:
+        result = {}
+
+        for key in key_combination:
+            values = sequencify(struct[key])
+            for value in values:
+                result[key] = value
+                
+        results.append(result)
+
+    return results

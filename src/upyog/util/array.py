@@ -199,7 +199,7 @@ def is_sequence_like(obj):
     """
     return is_list_like(obj) or isinstance(obj, str)
 
-@ejectable(deps = is_list_like)
+@ejectable(deps = ["is_list_like"])
 def sequencify(value, type_ = list):
     """
     Convert a value into array-like.
@@ -240,3 +240,15 @@ def chain(*fns, query):
 @ejectable()
 def pluck(arr, key):
     return [d[key] for d in arr]
+
+@ejectable()
+def subsets(arr):
+    import itertools
+
+    result = []
+    
+    for i in range(1, len(arr) + 1):
+        result.extend(itertools.combinations(arr, i))
+    
+    return result
+

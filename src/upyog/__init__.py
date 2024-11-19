@@ -56,7 +56,8 @@ from upyog.util._dict  import (
     dict_keys,
     dict_values,
     dict_items,
-    dict_filter
+    dict_filter,
+    dict_combinations
 )
 from upyog.util._async import (
     asyncify,
@@ -98,6 +99,7 @@ from upyog.util.array  import (
     find,
     chain,
     pluck,
+    subsets
 )
 from upyog.util.string import (
     sanitize_html,
@@ -116,6 +118,7 @@ from upyog.util.string import (
     to_html,
     is_ascii,
     kebab_case,
+    snake_case,
     charsplit,
     strip_ansi,
     sanitize_text,
@@ -288,6 +291,10 @@ from upyog.util._aws import (
     AWSClient,
     get_boto3_session,
     get_boto3_client,
+    invoke_lambda,
+    check_ddb_update,
+    get_ddb_table_name,
+    get_sfn_executions
 )
 
 settings = Settings()

@@ -518,7 +518,7 @@ class RootClient(BaseObject):
         self._setup()
 
     def _build_uri(self, path, **kwargs):
-        variables = getattr(self, "variables") or {}
+        variables = getattr(self, "variables", None) or {}
         args = {}
 
         for key, meta in dict_items(variables):

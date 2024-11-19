@@ -73,6 +73,12 @@ def camel_case(string, delimiter = " ", to_lower = True):
     return camel
 
 @ejectable()
+def snake_case(string):
+    import re
+    result = re.sub("([A-Z])", "_\\1", string).lower()
+    return result
+
+@ejectable()
 def safe_encode(obj, encoding = "utf-8"):
     try:
         obj = obj.encode(encoding)

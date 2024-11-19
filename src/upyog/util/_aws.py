@@ -233,3 +233,85 @@ def get_boto3_client(service, region_name=None):
         _BOTO3_CLIENT[key] = session.client(service)
 
     return _BOTO3_CLIENT[key]
+
+@ejectable(deps = ["get_boto3_client"])
+def invoke_lambda(fn_name, event):
+    import json
+
+    client   = get_boto3_client("lambda")
+    response = client.invoke(
+        FunctionName = fn_name,
+        Payload      = json.dumps(event)
+    )
+
+    body = response["Payload"].read()
+
+    try:
+        response = json.loads(body)
+    except json.JSONDecodeError:
+        pass
+
+    return response
+
+@ejectable(deps = ["get_boto3_client"])
+def check_ddb_update(tb_name, pk, sk, update):
+    ddb = get_boto3_client("dynamodb")
+    response = ddb.query(
+        TableName = tb_name,
+        KeyConditionExpression = "PK = :pk AND SK = :sk",
+        ExpressionAttributeValues = {
+            ":pk": { "S": pk },
+            ":sk": { "S": sk }
+        }
+    )
+
+    assert response["Count"] == 1
+
+    item = response["Items"][0]
+
+    checked = True
+
+    for key, value in update.items():
+        checked = checked and key in item
+        
+        for types in ("S", "BOOL"):
+            if types in item[key]:
+                checked = checked and item[key][types] == value
+                break
+
+        if "M" in item[key]:
+            for sub_key, sub_value in value.items():
+                checked = checked and sub_key in item[key]["M"]
+                checked = checked and item[key]["M"][sub_key]["S"] == sub_value
+
+    return checked
+
+@ejectable(deps = ["get_boto3_client"])
+def get_ddb_table_name(tb_name_pattern):
+    import re
+
+    ddb = get_boto3_client("dynamodb")
+    response = ddb.list_tables()
+
+    for tb_name in response["TableNames"]:
+        if re.match(tb_name_pattern, tb_name):
+            return tb_name
+
+    raise ValueError(f"Table '{tb_name_pattern}' not found.")
+
+# def get_sfn_arn(name):
+    # return f"arn:aws:states:us-west-2:123456789012:stateMachine:{name}"
+
+@ejectable(deps = ["get_boto3_client"])
+def get_sfn_executions(name, from_, to):
+    sfn      = get_boto3_client("stepfunctions")
+
+    sfn_arn  = get_sfn_arn(name)
+
+    response = sfn.list_executions(
+        stateMachineArn = name,
+        startDate = from_,
+        endDate = to
+    )
+
+    return response["executions"]
