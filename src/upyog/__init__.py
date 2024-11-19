@@ -296,6 +296,7 @@ from upyog.util._aws import (
     get_ddb_table_name,
     get_sfn_executions
 )
+from upyog.util.b64 import b64decode
 
 settings = Settings()
 
