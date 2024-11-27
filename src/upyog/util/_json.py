@@ -108,11 +108,11 @@ class JSONLogger(AutoDict):
 @ejectable(deps = ["is_list_like", "safe_decode", "read"])
 def load_json(path, *args, **kwargs):
     import json, os.path as osp
-    import collections
+    from collections.abc import Mapping
 
     object_hook = kwargs.pop("object_hook", None)
 
-    if is_list_like(path) or isinstance(path, collections.Mapping):
+    if is_list_like(path) or isinstance(path, Mapping):
         return path
 
     path = safe_decode(path)

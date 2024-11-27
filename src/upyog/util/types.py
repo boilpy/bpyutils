@@ -282,7 +282,7 @@ def is_dict_like(x):
         is_dict_like([1, 2, 3])
         False
     """
-    from collections import Mapping
+    from collections.abc import Mapping
     return isinstance(x, Mapping)
 
 @ejectable()

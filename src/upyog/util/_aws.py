@@ -6,6 +6,7 @@ from upyog.util.environ import getenv
 from upyog.util.string  import get_random_str
 from upyog.util.eject   import ejectable
 from upyog.api.base     import AsyncBaseClient, BaseClient
+from upyog.util._json   import load_json
 
 AWS_DEFAULT = {
     "service": "execute-api",
@@ -287,7 +288,7 @@ def check_ddb_update(tb_name, pk, sk, update):
     return checked
 
 @ejectable(deps = ["get_boto3_client"])
-def get_ddb_table_name(tb_name_pattern):
+def aws_ddb_get_table_name(tb_name_pattern):
     import re
 
     ddb = get_boto3_client("dynamodb")
@@ -299,19 +300,89 @@ def get_ddb_table_name(tb_name_pattern):
 
     raise ValueError(f"Table '{tb_name_pattern}' not found.")
 
-# def get_sfn_arn(name):
-    # return f"arn:aws:states:us-west-2:123456789012:stateMachine:{name}"
-
 @ejectable(deps = ["get_boto3_client"])
+def get_aws_account_id():
+    sts      = get_boto3_client("sts")
+    response = sts.get_caller_identity()
+    return response["Account"]
+
+@ejectable(deps = ["get_aws_account_id"])
+def get_sfn_arn(name, region = None):
+    account_id = get_aws_account_id()
+    region     = region or AWS_DEFAULT["region"]
+    return f"arn:aws:states:{region}:{account_id}:stateMachine:{name}"
+
+@ejectable(deps = ["get_boto3_client", "load_json"])
+def aws_sm_get_secret(name, raise_err=True, patch=None):
+    """
+    Get a Telemetry Secret from AWS Secrets Manager.
+
+    Args:
+        name (str): The name of the Secret.
+        raise_err (bool): Raise an error if the Secret is not found.
+
+    Returns:
+        dict: The Secret Data.
+
+    Example:
+        >>> get_secret("Foo/Bar")
+        { "ConsumerKey": "foo", "PrivateKey": "-----BEGIN....",
+        "Username": "slartibartfast@amazon.com" }
+    """
+    import json
+
+    client = get_boto3_client("secretsmanager")
+    response = client.get_secret_value(SecretId=name)
+
+    secret = response["SecretString"]
+
+    try:
+        data = load_json(secret)
+    except json.JSONDecodeError:
+        if raise_err:
+            raise ValueError(f"Invalid JSON data within Secret: {name}")
+        else:
+            data = {}
+
+    if data and patch:
+        data = patch(data)
+
+    return data
+
+@ejectable(deps = ["get_boto3_client", "get_sfn_arn"])
 def get_sfn_executions(name, from_, to):
     sfn      = get_boto3_client("stepfunctions")
 
     sfn_arn  = get_sfn_arn(name)
 
     response = sfn.list_executions(
-        stateMachineArn = name,
-        startDate = from_,
-        endDate = to
+        stateMachineArn = sfn_arn,
     )
 
-    return response["executions"]
+    filtered = []
+
+    for execution in response["executions"]:
+        if from_ <= execution["startDate"] <= to:
+            filtered.append(execution)
+
+    return filtered
+
+@ejectable(deps = ["get_boto3_client"])
+def put_secret(name, data):
+    """
+    Put a Telemetry Secret into AWS Secrets Manager.
+
+    Args:
+        name (str): The name of the Secret.
+        data (dict): The Secret Data.
+
+    Returns:
+        None
+
+    Example:
+        >>> put_secret("Foo/Bar", { "ConsumerKey": "foo", "PrivateKey": "-----BEGIN....",
+        "Username": "" })
+    """
+    import json
+    client = get_boto3_client("secretsmanager")
+    client.put_secret_value(SecretId=name, SecretString=json.dumps(data))

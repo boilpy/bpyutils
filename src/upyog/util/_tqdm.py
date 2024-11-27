@@ -25,3 +25,10 @@ class FakeAsyncTqdm:
     
     def __anext__(self):
         return self.iterable.__anext__()
+    
+def progress(*args, **kwargs):
+    try:
+        from tqdm import tqdm as _tqdm
+        return _tqdm(*args, **kwargs)
+    except ImportError:
+        return iter(FakeAsyncTqdm(*args, **kwargs))

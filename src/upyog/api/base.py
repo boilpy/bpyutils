@@ -517,6 +517,21 @@ class RootClient(BaseObject):
 
         self._setup()
 
+    def _get_certificates(self):
+        certs = []
+
+        requests_ca_bundle = os.environ.get("REQUESTS_CA_BUNDLE", None)
+        if requests_ca_bundle:
+            certs.append(requests_ca_bundle)
+        else:
+            try:
+                import certifi
+                certs.append(certifi.where())
+            except ImportError:
+                pass
+
+        return certs
+
     def _build_uri(self, path, **kwargs):
         variables = getattr(self, "variables", None) or {}
         args = {}
@@ -694,7 +709,12 @@ class RootClient(BaseObject):
         if not hasattr(self, "_session"):
             if self.async_:
                 httpx     = import_or_raise("httpx")
-                session   = httpx.AsyncClient()
+
+                cert      = self._get_certificates()
+                transport = httpx.AsyncHTTPTransport(
+                    cert  = cert
+                )
+                session   = httpx.AsyncClient(transport = transport)
             else:
                 requests  = import_or_raise("requests")
                 session   = requests.Session()

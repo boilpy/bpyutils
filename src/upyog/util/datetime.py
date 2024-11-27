@@ -14,6 +14,7 @@ now         = dt.datetime.now
 utcnow      = dt.datetime.utcnow
 ejectable(alias = { "key": "utcnow", "alias": "datetime.datetime.utcnow", "imports": "datetime" })
 timedelta   = dt.timedelta
+ejectable(alias = { "key": "timedelta", "alias": "datetime.datetime.timedelta", "imports": "datetime" })
 datetime    = dt.datetime
 
 today       = dt.date.today
@@ -40,6 +41,11 @@ EPOCH       = dt.datetime(1970, 1, 1)
 #         timezone_ = getattr(pytz, timezone_, "UTC")
 #         now_      = now_.astimezone(timezone_)
 #     return now_
+
+@ejectable(deps = ["now"])
+def tznow():
+    import pytz
+    return now(pytz.utc)
 
 @ejectable()
 def get_timestamp_str(format_ = '%Y-%m-%d %H:%M:%S', dtobj = None):
