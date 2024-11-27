@@ -638,3 +638,8 @@ def join2(*args, **kwargs):
         output = "".join(args)
 
     return output
+
+@ejectable(deps = ["sequencify"])
+def is_file_ext(path, extensions):
+    _, extension = osp.splitext(path)
+    return extension in sequencify(extensions)

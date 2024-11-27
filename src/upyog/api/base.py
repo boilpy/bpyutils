@@ -530,6 +530,8 @@ class RootClient(BaseObject):
             except ImportError:
                 pass
 
+        print(certs)
+
         return certs
 
     def _build_uri(self, path, **kwargs):

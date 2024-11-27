@@ -188,7 +188,8 @@ from upyog.util.system import (
     parse_config_string,
     makepath,
     is_tty,
-    join2
+    join2,
+    is_file_ext
 )
 from upyog.util.environ import (
     getenv,
