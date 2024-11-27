@@ -186,7 +186,7 @@ class AWSClient(AsyncBaseClient):
                 region     = region
             )
 
-_BOTO3_SESSION = None
+_BOTO3_SESSION = {}
 _BOTO3_CLIENT  = {}
 
 @ejectable(globals_ = { "AWS_DEFAULT": AWS_DEFAULT, "_BOTO3_SESSION": _BOTO3_SESSION, "_BOTO3_CLIENT": _BOTO3_CLIENT })
@@ -203,11 +203,12 @@ def get_boto3_session(region_name=None):
     """
     import boto3
     global _BOTO3_SESSION
-    if not _BOTO3_SESSION or not _BOTO3_SESSION.region_name == region_name:
-        _BOTO3_SESSION = boto3.Session(
-            region_name=region_name or AWS_DEFAULT["region"]
-        )
-    return _BOTO3_SESSION
+    region_name = region_name or AWS_DEFAULT["region"]
+    key = f"{region_name}"
+
+    if key not in _BOTO3_SESSION:
+        _BOTO3_SESSION[key] = boto3.Session(region_name=region_name)
+    return _BOTO3_SESSION[key]
 
 @ejectable(globals_ = { "AWS_DEFAULT": AWS_DEFAULT }, deps = ["get_boto3_session"])
 def get_boto3_client(service, region_name=None):
