@@ -643,3 +643,7 @@ def join2(*args, **kwargs):
 def is_file_ext(path, extensions):
     _, extension = osp.splitext(path)
     return extension in sequencify(extensions)
+
+@ejectable()
+def homedir():
+    return osp.expanduser("~")
