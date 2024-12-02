@@ -22,6 +22,7 @@ from upyog.util.request         import (
 from upyog.util.string          import lower, upper
 from upyog.util.eject           import ejectable
 from upyog.util._dict           import check_dict_struct, setattr2
+from upyog.util.environ         import getenv
 
 logger = get_logger()
 
@@ -530,8 +531,6 @@ class RootClient(BaseObject):
             except ImportError:
                 pass
 
-        print(certs)
-
         return certs
 
     def _build_uri(self, path, **kwargs):
@@ -552,9 +551,23 @@ class RootClient(BaseObject):
         return formatted
     
     def _build_url(self, uri):
-        server = self.default_server
-        # return os.path.join(server["url"], uri)
-        return f"{server['url']}{uri}"
+        server =  getenv("API_SERVER")
+        if server:
+            server = self.servers.get(server)
+
+        if not server:
+            server = self.default_server
+
+        url = server['url']
+        if not url.endswith("/"):
+            url += "/"
+        
+        if uri.startswith("/"):
+            uri = uri[1:]
+
+        url += uri
+
+        return url
     
     def _build_request_kwargs(self, method, kwargs):
         method = lower(method)

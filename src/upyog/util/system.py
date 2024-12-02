@@ -415,7 +415,7 @@ def make_archive(base_name, *args, **kwargs):
         target_archive = shutil.make_archive(source_archive, *args, **kwargs)
 
         makepath(base_name)
-        shutil.move(target_archive, base_name)
+        return shutil.move(target_archive, base_name)
 
 def move(*files, **kwargs):
     """Move a file or a list of files to destination
@@ -451,6 +451,7 @@ def copy(*files, **kwargs):
     dest  = kwargs["dest"]
     raise_err = kwargs.get("raise_err", False)
     force = kwargs.get("force", False)
+    force = force or kwargs.get("exists_ok", False)
     
     for f in files:
         abspath = osp.abspath(f)

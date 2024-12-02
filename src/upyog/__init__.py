@@ -305,7 +305,7 @@ from upyog.util._aws import (
     put_secret,
     aws_sm_get_secret
 )
-from upyog.util.b64 import b64decode
+from upyog.util.b64 import b64decode, b64str
 from upyog.util.markdown import md_linkify
 
 settings = Settings()
