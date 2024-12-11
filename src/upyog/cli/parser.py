@@ -36,7 +36,7 @@ _DESCRIPTION_JUMBOTRON = \
 )
 
 @ejectable(deps = ["ArgumentParserFormatter", "check_file", "ConfigFileAction", "ParamAction", "can_ansi_format"])
-def get_base_parser(prog, description, help_ = True):
+def get_base_parser(prog, description, help_ = True, parents = None):
     import argparse, os
     import multiprocessing as mp, sys
 
@@ -44,7 +44,8 @@ def get_base_parser(prog, description, help_ = True):
         prog            = prog,
         description     = description,
         add_help        = False,
-        formatter_class = ArgumentParserFormatter
+        formatter_class = ArgumentParserFormatter,
+        parents         = parents or []
     )
     parser.add_argument("--cwd",
         default = getenv("CWD", os.getcwd()),

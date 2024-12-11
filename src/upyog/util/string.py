@@ -24,6 +24,12 @@ def strip_ansi(string):
     string = _REGEX_ANSI_ESCAPE.sub("", string)
     return string
 
+def singularize(string):
+    # A very shitty singularizer
+    if string.endswith("s"):
+        string = string[:-1]
+    return string
+
 def pluralize(string, count = 1):
     # A very shitty pluralizer
     if not string.endswith("s"):

@@ -110,6 +110,7 @@ from upyog.util.string import (
     strip,
     get_random_str,
     pluralize,
+    singularize,
     labelize,
     safe_encode,
     safe_decode,
@@ -304,6 +305,10 @@ from upyog.util._aws import (
     get_sfn_executions,
     put_secret,
     aws_sm_get_secret
+)
+from upyog.util.markdown import (
+    md_linkify,
+    md2html
 )
 from upyog.util.b64 import b64decode, b64str
 from upyog.util.markdown import md_linkify

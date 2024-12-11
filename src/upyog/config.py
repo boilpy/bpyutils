@@ -18,6 +18,7 @@ from upyog.util._json   import load_json
 from upyog._compat      import (iterkeys, itervalues, iteritems, configparser as cp)
 from upyog.log import get_logger
 from upyog.util.eject   import ejectable
+from upyog.util.system  import make_temp_file
 
 logger = get_logger(__name__)
 
@@ -163,36 +164,43 @@ def environment():
     return environ
 
 @ejectable(deps = ["load_json"])
-def load_config(fpath):
+def load_config(fpath, raw = False):
     import os.path as osp
 
     data  = None
 
-    fpath = osp.abspath(fpath)
-    f_handler = open(fpath, "r")
-
-    try:
-        try:
-            import yaml
-
-            try:
-                from yamlinclude import YamlIncludeConstructor
-
-                basedir = osp.dirname(fpath)
+    with make_temp_file() as tmp_file:
+        if not raw:
+            fpath = osp.abspath(fpath)
+            f_handler = open(fpath, "r")
+        else:
+            with open(tmp_file, "w") as f:
+                f.write(fpath)
                 
-                YamlIncludeConstructor.add_to_loader_class(
-                    loader_class=yaml.Loader,
-                    base_dir=basedir
-                )
-            except ImportError:
-                pass
+            f_handler = open(tmp_file, "r")
 
-            data = yaml.safe_load(f_handler)
+        try:
+            try:
+                import yaml
+
+                try:
+                    from yamlinclude import YamlIncludeConstructor
+
+                    basedir = osp.dirname(fpath)
+                    
+                    YamlIncludeConstructor.add_to_loader_class(
+                        loader_class=yaml.Loader,
+                        base_dir=basedir
+                    )
+                except ImportError:
+                    pass
+
+                data = yaml.safe_load(f_handler)
+            except ImportError:
+                data = load_json(f_handler)
         except ImportError:
             data = load_json(f_handler)
-    except ImportError:
-        data = load_json(f_handler)
-    finally:
-        f_handler.close()
+        finally:
+            f_handler.close()
 
     return data

@@ -509,10 +509,12 @@ class RootClient(BaseObject):
     )
 
     def __init__(self,
-        auth = None,
+        auth = None, api_key = None,
         *args, **kwargs):
         super_ = super(RootClient, self)
         super_.__init__(*args, **kwargs)
+
+        self.api_key = api_key
 
         self._auth = auth
 
@@ -525,11 +527,13 @@ class RootClient(BaseObject):
         if requests_ca_bundle:
             certs.append(requests_ca_bundle)
         else:
-            try:
-                import certifi
-                certs.append(certifi.where())
-            except ImportError:
-                pass
+            # TODO: check?
+            # try:
+            #     import certifi
+            #     certs.append(certifi.where())
+            # except ImportError:
+            #     pass
+            pass
 
         return certs
 
@@ -580,6 +584,11 @@ class RootClient(BaseObject):
 
         if self.auth:
             kwargs["auth"] = self.auth
+
+        if self.api_key:
+            headers = kwargs.get("headers", {})
+            headers.update({ "Authorization": f"Bearer {self.api_key}" })
+            kwargs["headers"] = headers
 
         return kwargs
 
